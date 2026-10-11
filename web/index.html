@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f9f8">
+  <meta name="description" content="Download Dhaka Stock Exchange news as one Excel-ready CSV.">
+  <title>DSE News · CSV downloads</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%231e6555'/%3E%3Cpath d='M9 23V16M16 23V10M23 23V6' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/" aria-label="DSE News home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="M7 21v-7m7 7V8m7 13V4"/></svg></span>
+        <span>DSE<span class="brand-light"> News</span></span>
+      </a>
+      <span class="header-label">CSV downloads</span>
+      <span class="exchange-badge"><span class="dot"></span> Dhaka Stock Exchange</span>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="page-heading" aria-labelledby="page-title">
+      <div><p class="eyebrow">A SIMPLE MARKET EXPORT</p><h1 id="page-title">News to CSV<span>.</span></h1>
+        <p class="intro">Choose your dates. Download one Excel-ready file.</p></div>
+      <span class="format-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M8 13h8M8 17h5"/></svg> One range. One CSV.</span>
+    </section>
+
+    <div class="workspace-grid">
+      <aside class="collection-panel">
+        <form id="collect-form" class="card collection-card">
+          <div class="section-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M16 3v4M8 3v4M3 11h18M8 15h2M14 15h2"/></svg></div>
+          <h2>Choose your date range</h2>
+          <p class="muted form-intro">Choose a date range to get started.</p>
+          <div class="quick-ranges" aria-label="Quick date ranges">
+            <button class="range-chip active" type="button" data-range="today" aria-pressed="true">Today</button>
+            <button class="range-chip" type="button" data-range="week" aria-pressed="false">Last 7 days</button>
+          </div>
+          <label for="start-date">From</label><input id="start-date" name="start" type="date" required>
+          <label for="end-date">To</label><input id="end-date" name="end" type="date" required>
+          <p class="field-help">Both dates are included.</p>
+          <button id="collect-button" class="button primary" type="submit"><span>Generate CSV</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+          <div id="collection-status" class="collection-status" role="status" aria-live="polite">
+            <div class="status-line"><span id="status-dot" class="dot neutral"></span><span id="status-label">Ready when you are</span></div>
+            <div id="progress-track" class="progress-track" hidden><div id="progress-fill"></div></div>
+            <p id="status-detail" class="muted" hidden></p>
+          </div>
+        </form>
+        <div class="export-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 12 3 3 5-6M12 3l8 4v6c0 5-8 8-8 8s-8-3-8-8V7z"/></svg><div><strong>A clean export</strong><p>Title, headline, description, and date. Ready to open in Excel.</p></div></div>
+      </aside>
+
+      <section id="export-panel" class="card saved-exports" aria-labelledby="exports-title" hidden>
+        <h2 id="exports-title">Saved CSVs</h2>
+        <p id="range-label" class="muted">Download a previously generated file.</p>
+        <div class="download-controls">
+          <label class="sr-only" for="export-select">Saved date range</label>
+          <select id="export-select" aria-label="Saved date range"></select>
+          <a id="download-button" class="button download" href="#" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 15v5h16v-5"/></svg> Download CSV</a>
+        </div>
+      </section>
+    </div>
+    <footer class="page-footer"><span>Source: Dhaka Stock Exchange</span><span>Built for a clearer view.</span></footer>
+  </main>
+
+
+</body>
+</html>
