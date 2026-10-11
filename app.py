@@ -28,7 +28,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-from scrape import FIELDS, sort_by_title
+from scrape import CSV_HEADERS, FIELDS, from_csv_row, sort_by_title, to_csv_row
 
 ROOT = Path(__file__).resolve().parent
 EXPORT_NAME = re.compile(r"dse_news_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})\.csv\Z")
@@ -69,7 +69,7 @@ class Workspace:
     def read_export(self, name):
         path = self.export_path(name)
         with path.open(encoding="utf-8-sig", newline="") as handle:
-            rows = [{key: row.get(key, "") for key in FIELDS} for row in csv.DictReader(handle)]
+            rows = [from_csv_row(row) for row in csv.DictReader(handle)]
         return sort_by_title(rows)
 
     def exports(self):
@@ -207,9 +207,9 @@ class Handler(BaseHTTPRequestHandler):
                 # Project legacy files onto the four public fields as well.
                 import io
                 stream = io.StringIO(newline="")
-                writer = csv.DictWriter(stream, fieldnames=FIELDS)
+                writer = csv.DictWriter(stream, fieldnames=[CSV_HEADERS[k] for k in FIELDS])
                 writer.writeheader()
-                writer.writerows(self.workspace.read_export(filename))
+                writer.writerows(to_csv_row(r) for r in self.workspace.read_export(filename))
                 self.send_bytes(stream.getvalue().encode("utf-8-sig"),
                                 "text/csv; charset=utf-8", filename=filename)
             else:

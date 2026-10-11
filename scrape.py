@@ -11,7 +11,7 @@ Usage:
     python scrape.py --from 2026-10-01 --to 2026-10-11 --headed
     python app.py  # Open the web interface at http://127.0.0.1:8000
 
-The title column retains the complete title/date/company metadata line. Dates
+The  column retains the complete title/date/company metadata line. Dates
 are normalized when recognized; otherwise their displayed text is retained.
 Every run writes one combined CSV with title, headline, description, and date.
 Rows are sorted alphabetically by title (case-insensitive).
@@ -52,6 +52,7 @@ TITLE = '[class~="group"][class*="inline-flex"][class*="items-baseline"]'
 HEADLINE = '[class*="text-[18px]"][class*="font-semibold"]'
 DESCRIPTION = '[class*="text-[13.5px]"][class*="leading-"]'
 FIELDS = ("title", "headline", "description", "date")
+CSV_HEADERS = {"title": "Code", "headline": "Title", "description": "Description", "date": "Date"}
 NEWS_API = "https://www.dse.com.bd/api/live/news"
 EMPTY_TEXT = re.compile(
     r"\b(?:no (?:news|records|results|data|items)(?:\s+(?:items|found|available))?"
@@ -463,14 +464,24 @@ def sort_by_title(rows):
     return sorted(rows, key=lambda row: " ".join((row.get("title") or "").split()).casefold())
 
 
+def to_csv_row(row):
+    """Map internal keys to the public CSV column names."""
+    return {CSV_HEADERS[k]: row.get(k, "") for k in FIELDS}
+
+
+def from_csv_row(row):
+    """Read a CSV row using new headers, falling back to legacy ones."""
+    return {k: row.get(CSV_HEADERS[k], row.get(k, "")) or "" for k in FIELDS}
+
+
 def write_csv(path, rows):
     # newline='' prevents blank rows on Windows; the BOM helps Excel read Bengali.
     # Atomic replacement prevents an interrupted write from corrupting an old CSV.
     temporary = path.with_suffix(".csv.tmp")
     with temporary.open("w", encoding="utf-8-sig", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=FIELDS)
+        writer = csv.DictWriter(handle, fieldnames=[CSV_HEADERS[k] for k in FIELDS])
         writer.writeheader()
-        writer.writerows(sort_by_title(rows))
+        writer.writerows(to_csv_row(r) for r in sort_by_title(rows))
     temporary.replace(path)
 
 

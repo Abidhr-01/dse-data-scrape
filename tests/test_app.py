@@ -57,8 +57,8 @@ class AppTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertTrue(body.startswith(b"\xef\xbb\xbf"))
         reader = csv.DictReader(io.StringIO(body.decode("utf-8-sig")))
-        self.assertEqual(reader.fieldnames, list(scrape.FIELDS))
-        self.assertEqual(list(reader), ROWS)
+        self.assertEqual(reader.fieldnames, [scrape.CSV_HEADERS[k] for k in scrape.FIELDS])
+        self.assertEqual(list(reader), [scrape.to_csv_row(r) for r in ROWS])
         self.assertIn(NAME, headers["Content-Disposition"])
 
     def test_validation_and_origin_protection(self):
