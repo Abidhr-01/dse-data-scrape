@@ -226,9 +226,10 @@ class Handler(BaseHTTPRequestHandler):
             return
         # A custom header and same-origin check prevent other sites starting jobs.
         origin = self.headers.get("Origin")
+        scheme = self.headers.get("X-Forwarded-Proto", "http").split(",")[0].strip()
         if (self.headers.get("X-Requested-With") != "DSEWorkspace"
-                or (origin and origin != f"http://{self.headers.get('Host')}")):
-            self.json({"error": "Open the app in your local browser to collect news."}, 403)
+                or (origin and origin != f"{scheme}://{self.headers.get('Host')}")):
+            self.json({"error": "Open the app in your browser on this site to collect news."}, 403)
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
@@ -248,15 +249,16 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8000)))
+    parser.add_argument("--host", default=os.environ.get("HOST", "127.0.0.1"))
     parser.add_argument("--output", type=Path, default=ROOT / "dse_news")
     args = parser.parse_args()
     if not 1 <= args.port <= 65535:
         parser.error("--port must be between 1 and 65535")
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
+    server = ThreadingHTTPServer((args.host, args.port), Handler)
     server.workspace = Workspace(args.output)
-    print(f"DSE News · http://127.0.0.1:{args.port}", flush=True)
+    print(f"DSE News · http://{args.host}:{args.port}", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
